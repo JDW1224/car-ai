@@ -1,0 +1,19 @@
+# ROS / colcon generated files
+build/
+install/
+log/
+
+# Python / editors
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.vscode/
+.idea/
+
+# Local assets and settings
+*.weights
+src/barrier_sim/models/test_video.mp4
+.env
+.env.*
+!.env.example

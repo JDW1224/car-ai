@@ -1,0 +1,341 @@
+<?xml version="1.0"?>
+<!-- ================================================================
+     모텔/호텔 주차장 입구 (parking_barrier)
+       - 노랑 차단기 본체 + 경광등
+       - 빨강/흰색 줄무늬 차단봉  (joint: arm_joint  -> /barrier_cmd)
+       - 무인정산기 / 진입기둥+간판 / 거치대
+       - 바닥(콘크리트) + 양옆 벽 + 바닥 화살표 + 과속방지턱
+       - 제어 가능한 자동차  (joint: car_joint  -> /car_cmd, prismatic Y축)
+     ================================================================ -->
+<robot name="parking_barrier">
+
+  <link name="world"/>
+  <joint name="fixed_to_world" type="fixed">
+    <parent link="world"/>
+    <child link="base_link"/>
+  </joint>
+
+  <!-- ===================== 차단기 본체 (노랑 하우징) ===================== -->
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0.5" rpy="0 0 0"/>
+      <geometry><box size="0.25 0.25 1.0"/></geometry>
+      <material name="yellow"><color rgba="0.95 0.75 0.1 1.0"/></material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.5" rpy="0 0 0"/>
+      <geometry><box size="0.25 0.25 1.0"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="50.0"/>
+      <inertia ixx="1.0" ixy="0" ixz="0" iyy="1.0" iyz="0" izz="1.0"/>
+    </inertial>
+  </link>
+  <gazebo reference="base_link"><visual><material>
+    <ambient>0.95 0.75 0.1 1.0</ambient><diffuse>0.95 0.75 0.1 1.0</diffuse>
+  </material></visual></gazebo>
+
+  <link name="base_plate">
+    <visual><origin xyz="0 0 0.04"/><geometry><box size="0.5 0.5 0.08"/></geometry></visual>
+    <collision><origin xyz="0 0 0.04"/><geometry><box size="0.5 0.5 0.08"/></geometry></collision>
+    <inertial><mass value="5.0"/><inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/></inertial>
+  </link>
+  <joint name="base_plate_joint" type="fixed">
+    <parent link="base_link"/><child link="base_plate"/><origin xyz="0 0 0"/>
+  </joint>
+  <gazebo reference="base_plate"><visual><material>
+    <ambient>0.08 0.08 0.08 1.0</ambient><diffuse>0.08 0.08 0.08 1.0</diffuse>
+  </material></visual></gazebo>
+
+  <link name="top_light">
+    <visual><origin xyz="0 0 0.06"/><geometry><cylinder radius="0.07" length="0.12"/></geometry></visual>
+    <inertial><mass value="0.2"/><inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/></inertial>
+  </link>
+  <joint name="top_light_joint" type="fixed">
+    <parent link="base_link"/><child link="top_light"/><origin xyz="0 0 1.0"/>
+  </joint>
+  <gazebo reference="top_light"><visual><material>
+    <ambient>0.9 0.05 0.05 1.0</ambient><diffuse>0.9 0.05 0.05 1.0</diffuse><emissive>0.6 0 0 1.0</emissive>
+  </material></visual></gazebo>
+
+  <!-- ===================== 차단봉 (줄무늬) ===================== -->
+  <link name="arm_link">
+    <visual>
+      <origin xyz="0.1667 0 0"/>
+      <geometry><box size="0.3333 0.05 0.1"/></geometry>
+      <material name="bar_red"><color rgba="0.85 0.05 0.05 1.0"/></material>
+    </visual>
+    <collision><origin xyz="1.0 0 0"/><geometry><box size="2.0 0.05 0.1"/></geometry></collision>
+    <inertial><mass value="2.0"/><inertia ixx="0.01" ixy="0" ixz="0" iyy="0.7" iyz="0" izz="0.7"/></inertial>
+  </link>
+  <gazebo reference="arm_link"><visual><material>
+    <ambient>0.85 0.05 0.05 1.0</ambient><diffuse>0.85 0.05 0.05 1.0</diffuse>
+  </material></visual></gazebo>
+
+  <joint name="arm_joint" type="revolute">
+    <parent link="base_link"/><child link="arm_link"/>
+    <origin xyz="0.0 0.13 0.9" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.57" upper="0.0" effort="10.0" velocity="1.0"/>
+  </joint>
+
+  <link name="stripe_2"><visual><geometry><box size="0.3333 0.052 0.102"/></geometry></visual>
+    <inertial><mass value="0.05"/><inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/></inertial></link>
+  <joint name="stripe_2_joint" type="fixed"><parent link="arm_link"/><child link="stripe_2"/><origin xyz="0.5 0 0"/></joint>
+  <gazebo reference="stripe_2"><visual><material><ambient>0.95 0.95 0.95 1.0</ambient><diffuse>0.95 0.95 0.95 1.0</diffuse></material></visual></gazebo>
+
+  <link name="stripe_3"><visual><geometry><box size="0.3333 0.052 0.102"/></geometry></visual>
+    <inertial><mass value="0.05"/><inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/></inertial></link>
+  <joint name="stripe_3_joint" type="fixed"><parent link="arm_link"/><child link="stripe_3"/><origin xyz="0.8333 0 0"/></joint>
+  <gazebo reference="stripe_3"><visual><material><ambient>0.85 0.05 0.05 1.0</ambient><diffuse>0.85 0.05 0.05 1.0</diffuse></material></visual></gazebo>
+
+  <link name="stripe_4"><visual><geometry><box size="0.3333 0.052 0.102"/></geometry></visual>
+    <inertial><mass value="0.05"/><inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/></inertial></link>
+  <joint name="stripe_4_joint" type="fixed"><parent link="arm_link"/><child link="stripe_4"/><origin xyz="1.1667 0 0"/></joint>
+  <gazebo reference="stripe_4"><visual><material><ambient>0.95 0.95 0.95 1.0</ambient><diffuse>0.95 0.95 0.95 1.0</diffuse></material></visual></gazebo>
+
+  <link name="stripe_5"><visual><geometry><box size="0.3333 0.052 0.102"/></geometry></visual>
+    <inertial><mass value="0.05"/><inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/></inertial></link>
+  <joint name="stripe_5_joint" type="fixed"><parent link="arm_link"/><child link="stripe_5"/><origin xyz="1.5 0 0"/></joint>
+  <gazebo reference="stripe_5"><visual><material><ambient>0.85 0.05 0.05 1.0</ambient><diffuse>0.85 0.05 0.05 1.0</diffuse></material></visual></gazebo>
+
+  <link name="stripe_6"><visual><geometry><box size="0.3333 0.052 0.102"/></geometry></visual>
+    <inertial><mass value="0.05"/><inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/></inertial></link>
+  <joint name="stripe_6_joint" type="fixed"><parent link="arm_link"/><child link="stripe_6"/><origin xyz="1.8333 0 0"/></joint>
+  <gazebo reference="stripe_6"><visual><material><ambient>0.95 0.95 0.95 1.0</ambient><diffuse>0.95 0.95 0.95 1.0</diffuse></material></visual></gazebo>
+
+  <!-- ===================== 거치대 ===================== -->
+  <link name="rest_post">
+    <visual><origin xyz="0 0 0.41"/><geometry><box size="0.1 0.1 0.82"/></geometry></visual>
+    <collision><origin xyz="0 0 0.41"/><geometry><box size="0.1 0.1 0.82"/></geometry></collision>
+    <inertial><mass value="2.0"/><inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.01"/></inertial>
+  </link>
+  <joint name="rest_post_joint" type="fixed"><parent link="world"/><child link="rest_post"/><origin xyz="1.95 0.13 0"/></joint>
+  <gazebo reference="rest_post"><visual><material><ambient>0.55 0.55 0.55 1.0</ambient><diffuse>0.55 0.55 0.55 1.0</diffuse></material></visual></gazebo>
+
+  <!-- ===================== 무인정산기 ===================== -->
+  <link name="kiosk_body">
+    <visual><origin xyz="0 0 0.625"/><geometry><box size="0.35 0.35 1.25"/></geometry></visual>
+    <collision><origin xyz="0 0 0.625"/><geometry><box size="0.35 0.35 1.25"/></geometry></collision>
+    <inertial><mass value="15.0"/><inertia ixx="0.5" ixy="0" ixz="0" iyy="0.5" iyz="0" izz="0.2"/></inertial>
+  </link>
+  <joint name="kiosk_body_joint" type="fixed"><parent link="world"/><child link="kiosk_body"/><origin xyz="-0.55 -0.7 0"/></joint>
+  <gazebo reference="kiosk_body"><visual><material><ambient>0.78 0.78 0.8 1.0</ambient><diffuse>0.78 0.78 0.8 1.0</diffuse></material></visual></gazebo>
+
+  <link name="kiosk_screen">
+    <visual><geometry><box size="0.03 0.28 0.45"/></geometry></visual>
+    <inertial><mass value="0.5"/><inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/></inertial>
+  </link>
+  <joint name="kiosk_screen_joint" type="fixed"><parent link="kiosk_body"/><child link="kiosk_screen"/><origin xyz="0.18 0 0.85"/></joint>
+  <gazebo reference="kiosk_screen"><visual><material><ambient>0.08 0.1 0.15 1.0</ambient><diffuse>0.08 0.1 0.15 1.0</diffuse><emissive>0 0.1 0.2 1.0</emissive></material></visual></gazebo>
+
+  <!-- ===================== 진입기둥 + 간판 ===================== -->
+  <link name="pillar_left">
+    <visual><origin xyz="0 0 1.3"/><geometry><box size="0.25 0.25 2.6"/></geometry></visual>
+    <collision><origin xyz="0 0 1.3"/><geometry><box size="0.25 0.25 2.6"/></geometry></collision>
+    <inertial><mass value="30.0"/><inertia ixx="2.0" ixy="0" ixz="0" iyy="2.0" iyz="0" izz="0.3"/></inertial>
+  </link>
+  <joint name="pillar_left_joint" type="fixed"><parent link="world"/><child link="pillar_left"/><origin xyz="-0.2 -4.5 0"/></joint>
+  <gazebo reference="pillar_left"><visual><material><ambient>0.6 0.6 0.62 1.0</ambient><diffuse>0.6 0.6 0.62 1.0</diffuse></material></visual></gazebo>
+
+  <link name="pillar_right">
+    <visual><origin xyz="0 0 1.3"/><geometry><box size="0.25 0.25 2.6"/></geometry></visual>
+    <collision><origin xyz="0 0 1.3"/><geometry><box size="0.25 0.25 2.6"/></geometry></collision>
+    <inertial><mass value="30.0"/><inertia ixx="2.0" ixy="0" ixz="0" iyy="2.0" iyz="0" izz="0.3"/></inertial>
+  </link>
+  <joint name="pillar_right_joint" type="fixed"><parent link="world"/><child link="pillar_right"/><origin xyz="2.2 -4.5 0"/></joint>
+  <gazebo reference="pillar_right"><visual><material><ambient>0.6 0.6 0.62 1.0</ambient><diffuse>0.6 0.6 0.62 1.0</diffuse></material></visual></gazebo>
+
+  <link name="gate_beam">
+    <visual><geometry><box size="2.65 0.3 0.3"/></geometry></visual>
+    <collision><geometry><box size="2.65 0.3 0.3"/></geometry></collision>
+    <inertial><mass value="10.0"/><inertia ixx="0.1" ixy="0" ixz="0" iyy="1.0" iyz="0" izz="1.0"/></inertial>
+  </link>
+  <joint name="gate_beam_joint" type="fixed"><parent link="world"/><child link="gate_beam"/><origin xyz="1.0 -4.5 2.7"/></joint>
+  <gazebo reference="gate_beam"><visual><material><ambient>0.12 0.12 0.12 1.0</ambient><diffuse>0.12 0.12 0.12 1.0</diffuse></material></visual></gazebo>
+
+  <link name="gate_sign">
+    <visual><geometry><box size="1.8 0.08 0.6"/></geometry></visual>
+    <inertial><mass value="2.0"/><inertia ixx="0.05" ixy="0" ixz="0" iyy="0.5" iyz="0" izz="0.5"/></inertial>
+  </link>
+  <joint name="gate_sign_joint" type="fixed"><parent link="world"/><child link="gate_sign"/><origin xyz="1.0 -4.55 2.3"/></joint>
+  <gazebo reference="gate_sign"><visual><material><ambient>0.8 0.1 0.1 1.0</ambient><diffuse>0.8 0.1 0.1 1.0</diffuse><emissive>0.3 0.0 0.0 1.0</emissive></material></visual></gazebo>
+
+  <!-- ===================== 환경 ===================== -->
+  <link name="floor_pad">
+    <visual><geometry><box size="6.0 20.0 0.02"/></geometry></visual>
+    <inertial><mass value="0.1"/><inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/></inertial>
+  </link>
+  <joint name="floor_pad_joint" type="fixed"><parent link="world"/><child link="floor_pad"/><origin xyz="1.0 -1.0 0.011"/></joint>
+  <gazebo reference="floor_pad"><visual><material><ambient>0.45 0.45 0.47 1.0</ambient><diffuse>0.45 0.45 0.47 1.0</diffuse></material></visual></gazebo>
+
+  <!-- 오른쪽: 건물 -->
+  <link name="building_main">
+    <visual><origin xyz="0 0 2.5"/><geometry><box size="3.0 16.0 5.0"/></geometry></visual>
+    <collision><origin xyz="0 0 2.5"/><geometry><box size="3.0 16.0 5.0"/></geometry></collision>
+    <inertial><mass value="500.0"/><inertia ixx="50" ixy="0" ixz="0" iyy="50" iyz="0" izz="50"/></inertial>
+  </link>
+  <joint name="building_main_joint" type="fixed"><parent link="world"/><child link="building_main"/><origin xyz="4.5 -1.0 0"/></joint>
+  <gazebo reference="building_main"><visual><material><ambient>0.80 0.76 0.68 1.0</ambient><diffuse>0.80 0.76 0.68 1.0</diffuse></material></visual></gazebo>
+
+  <!-- 건물 창문 띠 (층마다 유리, 충돌 없음) -->
+  <link name="building_windows">
+    <visual><origin xyz="0 0 1.5"/><geometry><box size="0.06 15.0 0.6"/></geometry></visual>
+    <visual><origin xyz="0 0 2.8"/><geometry><box size="0.06 15.0 0.6"/></geometry></visual>
+    <visual><origin xyz="0 0 4.1"/><geometry><box size="0.06 15.0 0.6"/></geometry></visual>
+    <inertial><mass value="0.1"/><inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/></inertial>
+  </link>
+  <joint name="building_windows_joint" type="fixed"><parent link="world"/><child link="building_windows"/><origin xyz="3.0 -1.0 0"/></joint>
+  <gazebo reference="building_windows"><visual><material><ambient>0.15 0.22 0.32 1.0</ambient><diffuse>0.15 0.22 0.32 1.0</diffuse><emissive>0.05 0.08 0.12 1.0</emissive></material></visual></gazebo>
+
+  <!-- 왼쪽: 화단 경계석 -->
+  <link name="planter_curb">
+    <visual><origin xyz="0 0 0.15"/><geometry><box size="0.8 11.0 0.3"/></geometry></visual>
+    <collision><origin xyz="0 0 0.15"/><geometry><box size="0.8 11.0 0.3"/></geometry></collision>
+    <inertial><mass value="20.0"/><inertia ixx="2" ixy="0" ixz="0" iyy="2" iyz="0" izz="2"/></inertial>
+  </link>
+  <joint name="planter_curb_joint" type="fixed"><parent link="world"/><child link="planter_curb"/><origin xyz="-1.9 -1.0 0"/></joint>
+  <gazebo reference="planter_curb"><visual><material><ambient>0.5 0.5 0.52 1.0</ambient><diffuse>0.5 0.5 0.52 1.0</diffuse></material></visual></gazebo>
+
+  <!-- 생울타리 (화단 위 초록 식재) -->
+  <link name="hedge">
+    <visual><origin xyz="0 0 0.5"/><geometry><box size="0.6 10.6 0.4"/></geometry></visual>
+    <inertial><mass value="0.5"/><inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/></inertial>
+  </link>
+  <joint name="hedge_joint" type="fixed"><parent link="world"/><child link="hedge"/><origin xyz="-1.9 -1.0 0"/></joint>
+  <gazebo reference="hedge"><visual><material><ambient>0.25 0.5 0.18 1.0</ambient><diffuse>0.25 0.5 0.18 1.0</diffuse></material></visual></gazebo>
+
+  <!-- 나무 줄기 2그루 -->
+  <link name="tree_trunks">
+    <visual><origin xyz="0 2.5 0.7"/><geometry><cylinder radius="0.12" length="1.4"/></geometry></visual>
+    <visual><origin xyz="0 -3.5 0.7"/><geometry><cylinder radius="0.12" length="1.4"/></geometry></visual>
+    <inertial><mass value="2.0"/><inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/></inertial>
+  </link>
+  <joint name="tree_trunks_joint" type="fixed"><parent link="world"/><child link="tree_trunks"/><origin xyz="-2.7 -1.0 0"/></joint>
+  <gazebo reference="tree_trunks"><visual><material><ambient>0.35 0.22 0.1 1.0</ambient><diffuse>0.35 0.22 0.1 1.0</diffuse></material></visual></gazebo>
+
+  <!-- 나무 잎 (초록 구) -->
+  <link name="tree_canopies">
+    <visual><origin xyz="0 2.5 1.75"/><geometry><sphere radius="0.7"/></geometry></visual>
+    <visual><origin xyz="0 -3.5 1.75"/><geometry><sphere radius="0.7"/></geometry></visual>
+    <inertial><mass value="0.5"/><inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/></inertial>
+  </link>
+  <joint name="tree_canopies_joint" type="fixed"><parent link="world"/><child link="tree_canopies"/><origin xyz="-2.7 -1.0 0"/></joint>
+  <gazebo reference="tree_canopies"><visual><material><ambient>0.2 0.55 0.2 1.0</ambient><diffuse>0.2 0.55 0.2 1.0</diffuse></material></visual></gazebo>
+
+  <link name="speed_bump">
+    <visual><geometry><box size="2.0 0.5 0.1"/></geometry></visual>
+    <inertial><mass value="0.1"/><inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/></inertial>
+  </link>
+  <joint name="speed_bump_joint" type="fixed"><parent link="world"/><child link="speed_bump"/><origin xyz="1.0 1.2 0.06"/></joint>
+  <gazebo reference="speed_bump"><visual><material><ambient>0.9 0.7 0.05 1.0</ambient><diffuse>0.9 0.7 0.05 1.0</diffuse></material></visual></gazebo>
+
+  <link name="floor_arrow">
+    <visual><origin xyz="0 0 0"/><geometry><box size="0.25 1.4 0.02"/></geometry></visual>
+    <visual><origin xyz="-0.22 0.55 0" rpy="0 0 0.785"/><geometry><box size="0.2 0.7 0.02"/></geometry></visual>
+    <visual><origin xyz="0.22 0.55 0" rpy="0 0 -0.785"/><geometry><box size="0.2 0.7 0.02"/></geometry></visual>
+    <inertial><mass value="0.1"/><inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/></inertial>
+  </link>
+  <joint name="floor_arrow_joint" type="fixed"><parent link="world"/><child link="floor_arrow"/><origin xyz="1.0 -1.2 0.025"/></joint>
+  <gazebo reference="floor_arrow"><visual><material><ambient>0.95 0.95 0.95 1.0</ambient><diffuse>0.95 0.95 0.95 1.0</diffuse></material></visual></gazebo>
+
+  <!-- 차선 (양쪽 흰 선, 충돌 없음) -->
+  <link name="lane_lines">
+    <visual><origin xyz="-1.0 0 0"/><geometry><box size="0.12 16.0 0.02"/></geometry></visual>
+    <visual><origin xyz=" 1.0 0 0"/><geometry><box size="0.12 16.0 0.02"/></geometry></visual>
+    <inertial><mass value="0.1"/><inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/></inertial>
+  </link>
+  <joint name="lane_lines_joint" type="fixed"><parent link="world"/><child link="lane_lines"/><origin xyz="1.0 -1.0 0.024"/></joint>
+  <gazebo reference="lane_lines"><visual><material><ambient>0.92 0.92 0.92 1.0</ambient><diffuse>0.92 0.92 0.92 1.0</diffuse></material></visual></gazebo>
+
+  <!-- 가로등 2개 (기둥) -->
+  <link name="lamp_poles">
+    <visual><origin xyz="0   0 2.0"/><geometry><cylinder radius="0.08" length="4.0"/></geometry></visual>
+    <visual><origin xyz="3.8 0 2.0"/><geometry><cylinder radius="0.08" length="4.0"/></geometry></visual>
+    <inertial><mass value="3.0"/><inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/></inertial>
+  </link>
+  <joint name="lamp_poles_joint" type="fixed"><parent link="world"/><child link="lamp_poles"/><origin xyz="-1.5 -2.0 0"/></joint>
+  <gazebo reference="lamp_poles"><visual><material><ambient>0.4 0.4 0.42 1.0</ambient><diffuse>0.4 0.4 0.42 1.0</diffuse></material></visual></gazebo>
+
+  <!-- 가로등 램프 (노란 불, 차로쪽으로 살짝 내밈) -->
+  <link name="lamp_heads">
+    <visual><origin xyz="0.35  0 3.95"/><geometry><box size="0.55 0.25 0.18"/></geometry></visual>
+    <visual><origin xyz="3.45 0 3.95"/><geometry><box size="0.55 0.25 0.18"/></geometry></visual>
+    <inertial><mass value="0.2"/><inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/></inertial>
+  </link>
+  <joint name="lamp_heads_joint" type="fixed"><parent link="world"/><child link="lamp_heads"/><origin xyz="-1.5 -2.0 0"/></joint>
+  <gazebo reference="lamp_heads"><visual><material><ambient>0.95 0.9 0.55 1.0</ambient><diffuse>0.95 0.9 0.55 1.0</diffuse><emissive>0.8 0.7 0.3 1.0</emissive></material></visual></gazebo>
+
+  <!-- ===================== 자동차 (SUV, prismatic Y축 / 전방 +Y) ===================== -->
+  <!-- car_body = 하부 차체 + 루프 (흰색) -->
+  <link name="car_body">
+    <visual><origin xyz="0 0 0.625"/><geometry><box size="1.85 4.3 0.65"/></geometry>
+      <material name="car_white"><color rgba="0.92 0.92 0.95 1.0"/></material></visual>
+    <visual><origin xyz="0 -0.2 1.525"/><geometry><box size="1.75 2.4 0.35"/></geometry></visual>
+    <collision><origin xyz="0 0 0.95"/><geometry><box size="1.85 4.3 1.3"/></geometry></collision>
+    <inertial><mass value="20.0"/><inertia ixx="25" ixy="0" ixz="0" iyy="12" iyz="0" izz="25"/></inertial>
+  </link>
+  <joint name="car_joint" type="prismatic">
+    <parent link="world"/><child link="car_body"/>
+    <origin xyz="1.0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-10.0" upper="9.0" effort="2000.0" velocity="10.0"/>
+  </joint>
+  <gazebo reference="car_body"><visual><material><ambient>0.92 0.92 0.95 1.0</ambient><diffuse>0.92 0.92 0.95 1.0</diffuse></material></visual></gazebo>
+
+  <!-- 유리창 띠 (어두운 유리) -->
+  <link name="car_glass">
+    <visual><origin xyz="0 -0.1 1.15"/><geometry><box size="1.8 3.0 0.4"/></geometry></visual>
+    <inertial><mass value="0.2"/><inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/></inertial>
+  </link>
+  <joint name="car_glass_joint" type="fixed"><parent link="car_body"/><child link="car_glass"/><origin xyz="0 0 0"/></joint>
+  <gazebo reference="car_glass"><visual><material><ambient>0.1 0.13 0.18 1.0</ambient><diffuse>0.1 0.13 0.18 1.0</diffuse></material></visual></gazebo>
+
+  <!-- 바퀴 4개 (검정) -->
+  <link name="car_wheels">
+    <visual><origin xyz="-0.8  1.4 0.38" rpy="0 1.5708 0"/><geometry><cylinder radius="0.38" length="0.32"/></geometry></visual>
+    <visual><origin xyz=" 0.8  1.4 0.38" rpy="0 1.5708 0"/><geometry><cylinder radius="0.38" length="0.32"/></geometry></visual>
+    <visual><origin xyz="-0.8 -1.4 0.38" rpy="0 1.5708 0"/><geometry><cylinder radius="0.38" length="0.32"/></geometry></visual>
+    <visual><origin xyz=" 0.8 -1.4 0.38" rpy="0 1.5708 0"/><geometry><cylinder radius="0.38" length="0.32"/></geometry></visual>
+    <inertial><mass value="0.4"/><inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/></inertial>
+  </link>
+  <joint name="car_wheels_joint" type="fixed"><parent link="car_body"/><child link="car_wheels"/><origin xyz="0 0 0"/></joint>
+  <gazebo reference="car_wheels"><visual><material><ambient>0.05 0.05 0.05 1.0</ambient><diffuse>0.05 0.05 0.05 1.0</diffuse></material></visual></gazebo>
+
+  <!-- 헤드라이트 (전방 +Y, 흰색) -->
+  <link name="car_headlights">
+    <visual><origin xyz="-0.6 2.16 0.7"/><geometry><box size="0.3 0.08 0.18"/></geometry></visual>
+    <visual><origin xyz=" 0.6 2.16 0.7"/><geometry><box size="0.3 0.08 0.18"/></geometry></visual>
+    <inertial><mass value="0.05"/><inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/></inertial>
+  </link>
+  <joint name="car_headlights_joint" type="fixed"><parent link="car_body"/><child link="car_headlights"/><origin xyz="0 0 0"/></joint>
+  <gazebo reference="car_headlights"><visual><material><ambient>0.95 0.95 0.85 1.0</ambient><diffuse>0.95 0.95 0.85 1.0</diffuse><emissive>0.6 0.6 0.45 1.0</emissive></material></visual></gazebo>
+
+  <!-- 테일라이트 (후방 -Y, 빨강) -->
+  <link name="car_taillights">
+    <visual><origin xyz="-0.65 -2.16 0.75"/><geometry><box size="0.35 0.08 0.16"/></geometry></visual>
+    <visual><origin xyz=" 0.65 -2.16 0.75"/><geometry><box size="0.35 0.08 0.16"/></geometry></visual>
+    <inertial><mass value="0.05"/><inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/></inertial>
+  </link>
+  <joint name="car_taillights_joint" type="fixed"><parent link="car_body"/><child link="car_taillights"/><origin xyz="0 0 0"/></joint>
+  <gazebo reference="car_taillights"><visual><material><ambient>0.7 0.05 0.05 1.0</ambient><diffuse>0.7 0.05 0.05 1.0</diffuse><emissive>0.5 0.0 0.0 1.0</emissive></material></visual></gazebo>
+
+  <!-- ===================== 플러그인 ===================== -->
+  <gazebo>
+    <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher">
+        <joint_name>arm_joint</joint_name>
+        <joint_name>car_joint</joint_name>
+    </plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+        <joint_name>arm_joint</joint_name>
+        <topic>/barrier_cmd</topic>
+        <p_gain>10.0</p_gain><i_gain>0.0</i_gain><d_gain>0.1</d_gain>
+    </plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+        <joint_name>car_joint</joint_name>
+        <topic>/car_cmd</topic>
+        <p_gain>1500.0</p_gain><i_gain>0.0</i_gain><d_gain>300.0</d_gain>
+    </plugin>
+  </gazebo>
+
+</robot>
